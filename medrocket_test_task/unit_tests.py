@@ -95,6 +95,32 @@ class BuilderTest(unittest.TestCase):
         # assert
         self.assertEqual(result, '')
 
+    def test_builder_returns_no_completed_tasks_when_user_has_not_it(self):
+        """Checks if builder returns no completed tasks when user has not it"""
+        # arrange
+        tasks = [Todo(1, 5, 'task1', False),]
+        user = User(1, 'Name Example', 'admin',
+                    'example@gmail.com', 'Company Example', tasks)
+        sut = DefaultUserBuilder(user)
+        # act
+        result = sut.build_tasks()
+        # assert
+        self.assertEqual(result, f'Оставшиеся задачи ({len(tasks)}):\n'
+                                 'task1')
+
+    def test_builder_returns_no_rest_tasks_when_user_has_not_it(self):
+        """Checks if builder returns no rest tasks when user has not it"""
+        # arrange
+        tasks = [Todo(1, 5, 'task1', True),]
+        user = User(1, 'Name Example', 'admin',
+                    'example@gmail.com', 'Company Example', tasks)
+        sut = DefaultUserBuilder(user)
+        # act
+        result = sut.build_tasks()
+        # assert
+        self.assertEqual(result, f'Завершённые задачи ({len(tasks)}):\n'
+                                 'task1')
+
     def test_builder_shows_tasks_with_a_boundary_length_correctly(self):
         """Checks if builder returns correct tasks with boundary length"""
         # arrange

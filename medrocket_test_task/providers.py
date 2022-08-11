@@ -54,8 +54,10 @@ class APITodoProvider(TodoProvider):
                 todo = self.deserializer.deserealize(**data_dict)
                 todos.append(todo)
             except DeserializationError as error:
-                Logger.warn('Invalid data accepted from the server: ' + str(error))
+                Logger.warn(
+                    'Invalid data accepted from the server: ' + str(error))
         return todos
+
 
 class APIUserProvider(UserProvider):
     """Provides users from API"""
@@ -74,11 +76,15 @@ class APIUserProvider(UserProvider):
                 user: User = self.deserializer.deserealize(**data_dict)
                 users[user.id] = user
             except DeserializationError as error:
-                Logger.warn('Invalid data accepted from the server: ' + str(error))
+                Logger.warn(
+                    'Invalid data accepted from the server: ' + str(error))
 
         todos: List[Todo] = self.todo_provider.get_todos()
         for todo in todos:
-            user = users[todo.user_id]
-            user.tasks.append(todo)
+            user = users.get(todo.user_id)
+            if user is None:
+                Logger.warn('Received task without a user')
+            else:
+                user.tasks.append(todo)
 
         return list(users.values())

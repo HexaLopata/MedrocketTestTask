@@ -34,7 +34,7 @@ class DefaultUserBuilder(UserBuilder):
 
     def build(self) -> str:
         """Returns user document"""
-        return (self.build_title() + '\n\n' + self.build_tasks()).strip('\n')
+        return (self.build_title() + '\n\n' + self.build_tasks())
 
     def build_title(self) -> str:
         """Returns document title"""
@@ -46,8 +46,6 @@ class DefaultUserBuilder(UserBuilder):
 
     def build_tasks(self) -> str:
         """Returns document tasks"""
-        if len(self.user.tasks) == 0:
-            return ''
         completed_tasks, rest_tasks = self._group_tasks()
         completed_tasks_names = list(map(
             lambda t: f'{self._trim_title(t.title)}',
@@ -60,10 +58,16 @@ class DefaultUserBuilder(UserBuilder):
         completed_tasks_names = '\n'.join(completed_tasks_names)
         rest_tasks_names = '\n'.join(rest_tasks_names)
 
-        return (f'Завершённые задачи ({len(completed_tasks)}):\n'
-                f'{completed_tasks_names}\n\n'
-                f'Оставшиеся задачи ({len(rest_tasks)}):\n'
-                f'{rest_tasks_names}')
+        result = ''
+        if len(completed_tasks) > 0:
+            result += (f'Завершённые задачи ({len(completed_tasks)}):\n'
+                       f'{completed_tasks_names}\n\n')
+
+        if len(rest_tasks) > 0:
+            result += (f'Оставшиеся задачи ({len(rest_tasks)}):\n'
+                       f'{rest_tasks_names}')
+
+        return result.strip('\n')
 
     def _group_tasks(self) -> Tuple[List[Todo], List[Todo]]:
         """
